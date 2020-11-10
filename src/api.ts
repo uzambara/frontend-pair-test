@@ -1,5 +1,6 @@
+import { LaunchData } from './types';
 
-export async function fetchUpcomingLaunches(limit: number): Promise<any[]> {
+export async function fetchUpcomingLaunches(limit: number): Promise<LaunchData[]> {
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
 
