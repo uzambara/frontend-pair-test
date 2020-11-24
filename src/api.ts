@@ -1,12 +1,12 @@
 import { LaunchData } from './types';
 
-export async function fetchUpcomingLaunches(limit: number): Promise<LaunchData[]> {
+export async function fetchPastLaunches(limit: number): Promise<LaunchData[]> {
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
 
     const body = JSON.stringify({
         query: `{
-            launchesUpcoming(limit: ${limit}) {
+            launchesPast(limit: ${limit}) {
                 rocket {
                     rocket_name
                     second_stage {
@@ -37,5 +37,5 @@ export async function fetchUpcomingLaunches(limit: number): Promise<LaunchData[]
     const request = await fetch("https://api.spacex.land/graphql/", options);
     const response = await request.json();
 
-    return response.data.launchesUpcoming;
+    return response.data.launchesPast;
 }

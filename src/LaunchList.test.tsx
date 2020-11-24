@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react';
 import { LaunchData } from './types';
 import LaunchList from './LaunchList';
 
-import { fetchUpcomingLaunches } from './api';
+import { fetchPastLaunches } from './api';
 jest.mock('./api');
 
 const mockLaunches: LaunchData[] = [
@@ -68,19 +68,19 @@ const mockLaunches: LaunchData[] = [
 ];
 
 beforeEach(() => {
-  (fetchUpcomingLaunches as jest.Mock).mockResolvedValue(mockLaunches)
+  (fetchPastLaunches as jest.Mock).mockResolvedValue(mockLaunches)
 })
 
-test('renders upcoming launches', async () => {
+test('renders past launches', async () => {
   render(<LaunchList/>);
 
-  const titleElement = screen.getByText("Upcoming Launches");
+  const titleElement = screen.getByText("Past Launches");
   expect(titleElement).toBeInTheDocument();
 
   const items = await screen.findAllByRole('listitem');
   expect(items.length).toBe(mockLaunches.length);
 
-  expect(fetchUpcomingLaunches).toBeCalledTimes(1);
+  expect(fetchPastLaunches).toBeCalledTimes(1);
 });
 
 test('renders sort by dropdown', async () => {

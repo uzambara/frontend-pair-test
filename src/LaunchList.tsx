@@ -2,7 +2,7 @@ import React from "react";
 
 import { LaunchData } from './types';
 
-import { fetchUpcomingLaunches } from './api';
+import { fetchPastLaunches } from './api';
 import LaunchListEntry from './LaunchListEntry';
 
 type Props = {
@@ -14,7 +14,7 @@ const LaunchList: React.FC<Props> = ({limit = 10}) => {
 
     React.useEffect(() => {
         const retrieveListItems = async () => {
-            const results = await fetchUpcomingLaunches(limit);
+            const results = await fetchPastLaunches(limit);
 
             setEntries(results)
         };
@@ -24,8 +24,8 @@ const LaunchList: React.FC<Props> = ({limit = 10}) => {
 
     return (
         <section className="App-list">
-            <h4>Upcoming Launches</h4>
-            <p>List of upcoming SpaceX launches</p>
+            <h4>Past Launches</h4>
+            <p>List of past SpaceX launches</p>
             <div className="App-list-controls">
                 <div className="App-list-control">
                     <label htmlFor="sortOrder">
