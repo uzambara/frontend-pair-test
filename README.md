@@ -6,7 +6,7 @@ It consumes **SpaceX's API**. Available here: https://api.spacex.land/graphql/.
 
 ## Requirements
 
-You are required to implement the following requirements in any given order.
+You are required to implement the following requirements.
 
 - [ ] Add support for sorting by mission name (asc/desc).
 - [ ] Add support for sorting by mission launch date (asc/desc).
