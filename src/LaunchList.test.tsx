@@ -112,14 +112,17 @@ describe("Launch list tests", () => {
     expect(fetchPastLaunches).toBeCalledWith(10, "mission_name", "asc");
   });
 
-  test("check sort in table", async () => {
+  test.each([
+      ["Mission Name sorting", "Mission Name", "mission_name"],
+    ["Mission Date sorting", "Mission Date", "launch_date_utc"],
+  ])("check %s", async (name, sortValue, sortField) => {
     render(<LaunchList/>);
 
-    const sortedValues = mockLaunches.sort((a, b) => a.mission_name.localeCompare(b.mission_name));
+    const sortedValues = mockLaunches.sort((a, b) => (a[sortField as keyof LaunchData] as string).localeCompare(b[sortField as keyof LaunchData] as string));
     (fetchPastLaunches as jest.Mock).mockResolvedValue(sortedValues);
 
     const sortSelect = await screen.findByTestId('sort');
-    userEvent.selectOptions(sortSelect, 'Mission Name');
+    userEvent.selectOptions(sortSelect, sortValue);
 
     const missionNamesElements = await screen.findAllByTestId("missionName");
     const missionNames = missionNamesElements.map(el => el.innerHTML);

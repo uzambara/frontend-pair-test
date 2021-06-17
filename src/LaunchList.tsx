@@ -12,7 +12,8 @@ type Props = {
 }
 
 const SORT_OPTIONS: Pair[] = [
-    {key: "mission_name", value: "Mission Name"}
+    {key: "mission_name", value: "Mission Name"},
+    {key: 'launch_date_utc', value: 'Mission Date'},
 ];
 const SORT_ORDER_OPTIONS: Pair[] = [
     {key: "asc", value: "Asc"},
