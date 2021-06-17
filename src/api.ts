@@ -1,4 +1,5 @@
 import {LaunchData, LaunchDataKeys, SortOrder} from './types';
+import {format, parse, parseISO} from "date-fns";
 
 export async function fetchPastLaunches(limit: number, missionNameFilter: string, sort: LaunchDataKeys, order: SortOrder): Promise<LaunchData[]> {
     const headers = new Headers();
@@ -26,7 +27,7 @@ export async function fetchPastLaunches(limit: number, missionNameFilter: string
                 }
             }
         }`,
-        variables: {}
+        variables: {},
     });
 
     const options: RequestInit = {
@@ -39,7 +40,12 @@ export async function fetchPastLaunches(limit: number, missionNameFilter: string
     const request = await fetch("https://api.spacex.land/graphql/", options);
     const response = await request.json();
 
-    return response.data.launchesPast;
+    const result = (response.data.launchesPast as LaunchData[]);
+    result.forEach(el => {
+        el.launch_date_utc = format(parseISO(el.launch_date_utc), "dd/MM/yyyy");
+    })
+
+    return result;
 }
 
 

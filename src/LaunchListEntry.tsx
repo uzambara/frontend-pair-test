@@ -1,4 +1,5 @@
 import React from "react";
+import {format} from "date-fns";
 
 type Props = {
     entry: any
@@ -19,7 +20,7 @@ const LaunchListEntry: React.FC<Props> = ({entry}) => {
             <h4 className="App-title-clickable" onClick={onEntryClicked} data-testid="missionName">
                 {entry.mission_name}
             </h4>
-            <h5>{entry.launch_date_utc}</h5>
+            <h5 data-testid="missionDate">{entry.launch_date_utc}</h5>
         </div>
         {isDetailVisible && <div className="App-list-entry-body" data-testid="entryBody">
             {missionPatch && <img width="10%" src={missionPatch} alt={`${entry.mission_name} Mission Patch`}/>}

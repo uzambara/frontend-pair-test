@@ -1,11 +1,12 @@
 import React from 'react';
-import {act, render, screen} from '@testing-library/react';
+import {act, render, screen, waitFor, fireEvent} from '@testing-library/react';
 
 import { LaunchData } from './types';
 import LaunchList from './LaunchList';
 
 import { fetchPastLaunches } from './api';
 import userEvent from "@testing-library/user-event";
+import {format, parseISO} from "date-fns";
 jest.mock('./api');
 
 const mockLaunches: LaunchData[] = [
@@ -168,24 +169,32 @@ describe("Launch list tests", () => {
     expect(missionNames).toStrictEqual(sortedValues.map(v => v.mission_name));
   });
 
-  //TODO Fix faketimers.
   test("check mission name filtering", async () => {
     render(<LaunchList/>);
 
     const nameFilter = 'XM';
     const filteredValues = mockLaunches.filter(el => el.mission_name.match(/XM/i));
-    (fetchPastLaunches as jest.Mock).mockResolvedValue(filteredValues);
+    const mockedFetch = (fetchPastLaunches as jest.Mock).mockResolvedValue(filteredValues);
 
     const filterInput = await screen.findByTestId('textSearch');
     userEvent.type(filterInput, nameFilter);
 
-    const fakeTimer = async () => setTimeout(() => Promise.resolve(), 1000);
-    await fakeTimer();
+    await waitFor(() => expect(mockedFetch).toHaveBeenCalledWith(10, "XM", "", "asc"));
 
     const missionNamesElements = await screen.findAllByTestId("missionName");
     const missionNames = missionNamesElements.map(el => el.innerHTML);
 
+    expect(fetchPastLaunches).toBeCalledTimes(2);
     expect(missionNames).toStrictEqual(filteredValues.map(el => el.mission_name));
+  });
+
+  test("check, that Mission Date has dd/mm/yyyy format", async () => {
+    render(<LaunchList/>);
+    const missionDateOutputs = await screen.findAllByTestId('missionDate');
+    const missionDates = missionDateOutputs.map(el => el.innerHTML);
+
+    const expectedResult = mockLaunches.map(el => format(parseISO(el.launch_date_utc), "dd/MM/yyyy"));
+    expect(missionDates).toStrictEqual(expectedResult);
   });
 });
 
