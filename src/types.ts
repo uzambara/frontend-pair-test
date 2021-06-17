@@ -22,7 +22,7 @@ export interface LaunchData {
 
 export type LaunchDataKeys = keyof LaunchData | "";
 
-export type SortOrder = 'asc' | 'desc' | "";
+export type SortOrder = 'asc' | 'desc';
 
 export type Pair = {
     key: string,

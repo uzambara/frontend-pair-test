@@ -13,9 +13,13 @@ type Props = {
 
 const SORT_OPTIONS: Pair[] = [
     {key: "mission_name", value: "Mission Name"}
-]
+];
+const SORT_ORDER_OPTIONS: Pair[] = [
+    {key: "asc", value: "Asc"},
+    {key: "desc", value: "Desc"},
+];
 
-const LaunchList: React.FC<Props> = ({limit = 10, initialSort = "", initialSortOrder = ""}) => {
+const LaunchList: React.FC<Props> = ({limit = 10, initialSort = "", initialSortOrder = "asc"}) => {
     const [entries, setEntries] = React.useState<LaunchData[]>([]);
     const [sort, setSort] = useState<LaunchDataKeys>(initialSort);
     const [sortOrder, setSortOrder] = useState<SortOrder>(initialSortOrder);
@@ -28,7 +32,7 @@ const LaunchList: React.FC<Props> = ({limit = 10, initialSort = "", initialSortO
         };
 
         retrieveListItems();
-    }, [setEntries, limit, sort]);
+    }, [setEntries, limit, sort, sortOrder]);
 
     return (
         <section className="App-list">
@@ -36,13 +40,21 @@ const LaunchList: React.FC<Props> = ({limit = 10, initialSort = "", initialSortO
             <p>List of past SpaceX launches</p>
             <div className="App-list-controls">
                 <div className="App-list-control">
-                    <label htmlFor="sortOrder">
+                    <label htmlFor="sort">
                         Sort by
                     </label>
-                    <select name="sortOrder" id="sortOrder" data-testid="sortOrder" onChange={(event) => setSort(event.target.value as LaunchDataKeys)}>
+                    <select name="sort" id="sort" data-testid="sort" onChange={(event) => setSort(event.target.value as LaunchDataKeys)}>
                         <option key={""} value={""}/>
                         {
                             SORT_OPTIONS.map(({key, value}) => <option key={key} value={key}>{value}</option>)
+                        }
+                    </select>
+                    <label htmlFor="sortOrder">
+                        Sort order
+                    </label>
+                    <select disabled={!Boolean(sort)} name="sortOrder" id="sortOrder" data-testid="sortOrder" onChange={(event) => setSortOrder(event.target.value as SortOrder)}>
+                        {
+                            SORT_ORDER_OPTIONS.map(({key, value}) => <option key={key} value={key}>{value}</option>)
                         }
                     </select>
                 </div>
