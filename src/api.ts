@@ -1,10 +1,10 @@
 import {LaunchData, LaunchDataKeys, SortOrder} from './types';
 
-export async function fetchPastLaunches(limit: number, sort: LaunchDataKeys, order: SortOrder): Promise<LaunchData[]> {
+export async function fetchPastLaunches(limit: number, missionNameFilter: string, sort: LaunchDataKeys, order: SortOrder): Promise<LaunchData[]> {
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
 
-    const params = getParams(limit, sort, order);
+    const params = getParams(limit, missionNameFilter, sort, order);
 
     const body = JSON.stringify({
         query: `{
@@ -43,13 +43,18 @@ export async function fetchPastLaunches(limit: number, sort: LaunchDataKeys, ord
 }
 
 
-export function getParams(limit: number, sort?: LaunchDataKeys, order?: SortOrder) {
+export function getParams(limit: number, missionNameFilter: string, sort?: LaunchDataKeys, order?: SortOrder) {
     let parameters = `limit: ${limit}`;
     if (Boolean(sort)) {
         parameters += `, sort: "${sort}"`;
     }
+
     if (Boolean(order)) {
         parameters += `, order: "${order}"`;
+    }
+
+    if (Boolean(missionNameFilter)) {
+        parameters += `, find: {mission_name: "${missionNameFilter}"}`;
     }
 
     return parameters;

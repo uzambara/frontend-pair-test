@@ -109,7 +109,7 @@ describe("Launch list tests", () => {
     await act(() => userEvent.selectOptions(sortSelect, 'Mission Name'));
 
     expect(fetchPastLaunches).toBeCalledTimes(2);
-    expect(fetchPastLaunches).toBeCalledWith(10, "mission_name", "asc");
+    expect(fetchPastLaunches).toBeCalledWith(10, "", "mission_name", "asc");
   });
 
   test.each([
@@ -166,6 +166,26 @@ describe("Launch list tests", () => {
     const missionNames = missionNamesElements.map(el => el.innerHTML);
 
     expect(missionNames).toStrictEqual(sortedValues.map(v => v.mission_name));
+  });
+
+  //TODO Fix faketimers.
+  test("check mission name filtering", async () => {
+    render(<LaunchList/>);
+
+    const nameFilter = 'XM';
+    const filteredValues = mockLaunches.filter(el => el.mission_name.match(/XM/i));
+    (fetchPastLaunches as jest.Mock).mockResolvedValue(filteredValues);
+
+    const filterInput = await screen.findByTestId('textSearch');
+    userEvent.type(filterInput, nameFilter);
+
+    const fakeTimer = async () => setTimeout(() => Promise.resolve(), 1000);
+    await fakeTimer();
+
+    const missionNamesElements = await screen.findAllByTestId("missionName");
+    const missionNames = missionNamesElements.map(el => el.innerHTML);
+
+    expect(missionNames).toStrictEqual(filteredValues.map(el => el.mission_name));
   });
 });
 

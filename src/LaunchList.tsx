@@ -1,9 +1,11 @@
-import React, {useState} from "react";
+import React, {useCallback, useMemo, useState} from "react";
 
 import {LaunchData, LaunchDataKeys, Pair, SortOrder} from './types';
 
 import { fetchPastLaunches } from './api';
 import LaunchListEntry from './LaunchListEntry';
+
+import debounce from 'debounce';
 
 type Props = {
     limit?: number,
@@ -24,16 +26,20 @@ const LaunchList: React.FC<Props> = ({limit = 10, initialSort = "", initialSortO
     const [entries, setEntries] = React.useState<LaunchData[]>([]);
     const [sort, setSort] = useState<LaunchDataKeys>(initialSort);
     const [sortOrder, setSortOrder] = useState<SortOrder>(initialSortOrder);
+    const [missionNameFilter, setMissionNameFilter] = useState<string>("");
 
     React.useEffect(() => {
         const retrieveListItems = async () => {
-            const results = await fetchPastLaunches(limit, sort, sortOrder);
+            const results = await fetchPastLaunches(limit, missionNameFilter, sort, sortOrder);
 
             setEntries(results)
         };
 
         retrieveListItems();
-    }, [setEntries, limit, sort, sortOrder]);
+    }, [setEntries, limit, sort, sortOrder, missionNameFilter]);
+
+    const handleNameFilterChange = useMemo(() =>
+        debounce((ev: React.ChangeEvent<HTMLInputElement>) => setMissionNameFilter(ev.target.value), 500), [setMissionNameFilter]);
 
     return (
         <section className="App-list">
@@ -64,6 +70,7 @@ const LaunchList: React.FC<Props> = ({limit = 10, initialSort = "", initialSortO
                         Search
                     </label>
                     <input name="textSearch" id="textSearch"
+                        onChange={handleNameFilterChange}
                         placeholder="Type mission name..."
                         data-testid="textSearch"/>
                 </div>
