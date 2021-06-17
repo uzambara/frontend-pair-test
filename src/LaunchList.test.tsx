@@ -187,15 +187,6 @@ describe("Launch list tests", () => {
     expect(fetchPastLaunches).toBeCalledTimes(2);
     expect(missionNames).toStrictEqual(filteredValues.map(el => el.mission_name));
   });
-
-  test("check, that Mission Date has dd/mm/yyyy format", async () => {
-    render(<LaunchList/>);
-    const missionDateOutputs = await screen.findAllByTestId('missionDate');
-    const missionDates = missionDateOutputs.map(el => el.innerHTML);
-
-    const expectedResult = mockLaunches.map(el => format(parseISO(el.launch_date_utc), "dd/MM/yyyy"));
-    expect(missionDates).toStrictEqual(expectedResult);
-  });
 });
 
 
