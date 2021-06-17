@@ -1,5 +1,6 @@
 import {LaunchData, LaunchDataKeys, SortOrder} from './types';
-import {format, parse, parseISO} from "date-fns";
+import {format, getUnixTime, parse, parseISO} from "date-fns";
+import { getTimezoneOffset } from 'date-fns-tz';
 
 export async function fetchPastLaunches(limit: number, missionNameFilter: string, sort: LaunchDataKeys, order: SortOrder): Promise<LaunchData[]> {
     const headers = new Headers();
@@ -42,7 +43,8 @@ export async function fetchPastLaunches(limit: number, missionNameFilter: string
 
     const result = (response.data.launchesPast as LaunchData[]);
     result.forEach(el => {
-        el.launch_date_utc = format(parseISO(el.launch_date_utc), "dd/MM/yyyy");
+        const dateTime = parseISO(el.launch_date_utc);
+        el.launch_date_utc = format(utcToLocal(dateTime), "dd/MM/yyyy");
     })
 
     return result;
@@ -64,4 +66,9 @@ export function getParams(limit: number, missionNameFilter: string, sort?: Launc
     }
 
     return parameters;
+}
+
+function utcToLocal(date: Date): Date {
+    const unix = getUnixTime(date);
+    return new Date(unix * 1000 + getTimezoneOffset(Intl.DateTimeFormat().resolvedOptions().timeZone, date));
 }
