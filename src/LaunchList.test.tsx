@@ -1,10 +1,11 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import {act, render, screen} from '@testing-library/react';
 
 import { LaunchData } from './types';
 import LaunchList from './LaunchList';
 
 import { fetchPastLaunches } from './api';
+import userEvent from "@testing-library/user-event";
 jest.mock('./api');
 
 const mockLaunches: LaunchData[] = [
@@ -96,4 +97,30 @@ test('renders search input', async () => {
   const searchInput = await screen.findByRole('textbox');
   expect(searchInput).toBeInTheDocument();
 });
+
+test("refetch data after sort changed", async () => {
+  render(<LaunchList/>);
+
+  const sortSelect = await screen.findByRole('combobox');
+
+  await act(() => userEvent.selectOptions(sortSelect, 'Mission Name'));
+
+  expect(fetchPastLaunches).toBeCalledTimes(2);
+  expect(fetchPastLaunches).toBeCalledWith(10, "mission_name", "");
+})
+
+test("check sort order in table", async () => {
+  render(<LaunchList/>);
+
+  const sortedValues = mockLaunches.sort((a, b) => a.mission_name.localeCompare(b.mission_name));
+  (fetchPastLaunches as jest.Mock).mockResolvedValue(sortedValues);
+
+  const sortSelect = await screen.findByRole('combobox');
+  userEvent.selectOptions(sortSelect, 'Mission Name');
+
+  const missionNamesElements = await screen.findAllByTestId("missionName");
+  const missionNames = missionNamesElements.map(el => el.innerHTML);
+
+  expect(missionNames).toStrictEqual(sortedValues.map(v => v.mission_name));
+})
 

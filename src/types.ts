@@ -19,3 +19,12 @@ export interface LaunchData {
         mission_patch_small: string | null;
     }
 }
+
+export type LaunchDataKeys = keyof LaunchData | "";
+
+export type SortOrder = 'asc' | 'desc' | "";
+
+export type Pair = {
+    key: string,
+    value: string,
+}

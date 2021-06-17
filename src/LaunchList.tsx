@@ -1,26 +1,34 @@
-import React from "react";
+import React, {useState} from "react";
 
-import { LaunchData } from './types';
+import {LaunchData, LaunchDataKeys, Pair, SortOrder} from './types';
 
 import { fetchPastLaunches } from './api';
 import LaunchListEntry from './LaunchListEntry';
 
 type Props = {
-    limit?: number
+    limit?: number,
+    initialSort?: LaunchDataKeys,
+    initialSortOrder?: SortOrder,
 }
 
-const LaunchList: React.FC<Props> = ({limit = 10}) => {
+const SORT_OPTIONS: Pair[] = [
+    {key: "mission_name", value: "Mission Name"}
+]
+
+const LaunchList: React.FC<Props> = ({limit = 10, initialSort = "", initialSortOrder = ""}) => {
     const [entries, setEntries] = React.useState<LaunchData[]>([]);
+    const [sort, setSort] = useState<LaunchDataKeys>(initialSort);
+    const [sortOrder, setSortOrder] = useState<SortOrder>(initialSortOrder);
 
     React.useEffect(() => {
         const retrieveListItems = async () => {
-            const results = await fetchPastLaunches(limit);
+            const results = await fetchPastLaunches(limit, sort, sortOrder);
 
             setEntries(results)
         };
 
         retrieveListItems();
-    }, [setEntries, limit]);
+    }, [setEntries, limit, sort]);
 
     return (
         <section className="App-list">
@@ -31,8 +39,11 @@ const LaunchList: React.FC<Props> = ({limit = 10}) => {
                     <label htmlFor="sortOrder">
                         Sort by
                     </label>
-                    <select name="sortOrder" id="sortOrder" data-testid="sortOrder">
-                        <option value="">-</option>
+                    <select name="sortOrder" id="sortOrder" data-testid="sortOrder" onChange={(event) => setSort(event.target.value as LaunchDataKeys)}>
+                        <option key={""} value={""}/>
+                        {
+                            SORT_OPTIONS.map(({key, value}) => <option key={key} value={key}>{value}</option>)
+                        }
                     </select>
                 </div>
                 <div className="App-list-control">

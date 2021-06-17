@@ -1,12 +1,14 @@
-import { LaunchData } from './types';
+import {LaunchData, LaunchDataKeys, SortOrder} from './types';
 
-export async function fetchPastLaunches(limit: number): Promise<LaunchData[]> {
+export async function fetchPastLaunches(limit: number, sort: LaunchDataKeys, order: SortOrder): Promise<LaunchData[]> {
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
 
+    const params = getParams(limit, sort, order);
+
     const body = JSON.stringify({
         query: `{
-            launchesPast(limit: ${limit}) {
+            launchesPast(${params}) {
                 rocket {
                     rocket_name
                     second_stage {
@@ -38,4 +40,17 @@ export async function fetchPastLaunches(limit: number): Promise<LaunchData[]> {
     const response = await request.json();
 
     return response.data.launchesPast;
+}
+
+
+export function getParams(limit: number, sort?: LaunchDataKeys, order?: SortOrder) {
+    let parameters = `limit: ${limit}`;
+    if (Boolean(sort)) {
+        parameters += `, sort: "${sort}"`;
+    }
+    if (Boolean(order)) {
+        parameters += `, order: "${order}"`;
+    }
+
+    return parameters;
 }
