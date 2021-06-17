@@ -102,13 +102,13 @@ test('renders search input', async () => {
 });
 
 test("refetch data after sort changed", async () => {
-  render(<LaunchList/>);
+  const {} = render(<LaunchList/>);
 
   const sortSelect = await screen.findByTestId('sort');
 
   act(() => userEvent.selectOptions(sortSelect, 'Mission Name'));
 
-  expect(fetchPastLaunches).toBeCalledTimes(2);
+  await waitFor(() => expect(fetchPastLaunches).toHaveBeenCalledTimes(2));
   expect(fetchPastLaunches).toBeCalledWith(10, "", "mission_name", "asc");
 });
 
